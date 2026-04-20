@@ -611,6 +611,16 @@ function OuraIntegration() {
       // Filter to primary sleep sessions (>1 hour) and show most recent first
       const longSleeps = json.data.filter((s: OuraSleep) => s.total_sleep_duration > MIN_SLEEP_DURATION_SECONDS).reverse();
       setData(longSleeps.slice(0, 7));
+      if (longSleeps.length > 0) {
+        const latest = longSleeps[0];
+        storage.setOuraLatest({
+          day: latest.day,
+          score: latest.score,
+          average_hrv: latest.average_hrv,
+          lowest_heart_rate: latest.lowest_heart_rate,
+          total_sleep_duration: latest.total_sleep_duration,
+        });
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
       setError(msg.includes('fetch') ? 'Could not reach Oura API. Check your internet connection.' : msg);

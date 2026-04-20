@@ -1,4 +1,4 @@
-import type { ClassInfo, Task, Reminder, AnxietyLog, CheckingLog, BrainDump, AppSettings, SleepLog, SleepSettings, DepartureItem, DepartureLog } from '../types';
+import type { ClassInfo, Task, Reminder, AnxietyLog, CheckingLog, BrainDump, AppSettings, SleepLog, SleepSettings, DepartureItem, DepartureLog, OuraCachedData } from '../types';
 
 const KEYS = {
   classes: 'diary_classes',
@@ -12,6 +12,7 @@ const KEYS = {
   sleepSettings: 'diary_sleep_settings',
   departureItems: 'diary_departure_items',
   departureLogs: 'diary_departure_logs',
+  ouraLatest: 'diary_oura_latest',
 };
 
 function getItem<T>(key: string, defaultValue: T): T {
@@ -60,6 +61,9 @@ export const storage = {
 
   getDepartureLogs: (): DepartureLog[] => getItem(KEYS.departureLogs, []),
   setDepartureLogs: (v: DepartureLog[]) => setItem(KEYS.departureLogs, v),
+
+  getOuraLatest: (): OuraCachedData | null => getItem<OuraCachedData | null>(KEYS.ouraLatest, null),
+  setOuraLatest: (v: OuraCachedData) => setItem(KEYS.ouraLatest, v),
 
   getSettings: (): AppSettings => {
     const defaultSettings: AppSettings = {

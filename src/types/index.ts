@@ -87,3 +87,11 @@ export interface DepartureLog {
 }
 
 export type TabType = 'dashboard' | 'schedule' | 'tasks' | 'reminders' | 'ocd' | 'adhd' | 'sleep' | 'settings';
+
+export interface OuraCachedData {
+  day: string;
+  score: number | null;
+  average_hrv: number | null;
+  lowest_heart_rate: number | null;
+  total_sleep_duration: number;
+}
