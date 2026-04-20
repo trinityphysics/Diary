@@ -86,7 +86,7 @@ export interface DepartureLog {
   confirmedItems: string[]; // labels of confirmed items
 }
 
-export type TabType = 'dashboard' | 'schedule' | 'tasks' | 'reminders' | 'wellbeing' | 'ocd' | 'adhd' | 'sleep' | 'settings';
+export type TabType = 'dashboard' | 'schedule' | 'tasks' | 'reminders' | 'wellbeing' | 'settings';
 
 export interface OuraCachedData {
   day: string;
