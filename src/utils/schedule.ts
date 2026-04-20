@@ -10,7 +10,9 @@ export interface PeriodInfo {
   isTutor?: boolean;
 }
 
-export function getPeriods(dayIndex: number, breakOption: AppSettings['breakTimeOption']): PeriodInfo[] {
+type BreakOption = AppSettings['breakOptions'][number];
+
+export function getPeriods(dayIndex: number, breakOption: BreakOption): PeriodInfo[] {
   const periods: PeriodInfo[] = [];
 
   periods.push({ index: 0, label: 'Period 1', startTime: '08:45', endTime: '09:35' });
@@ -45,7 +47,7 @@ function timeToMinutes(time: string): number {
   return h * 60 + m;
 }
 
-export function getCurrentPeriod(dayIndex: number, breakOption: AppSettings['breakTimeOption']): PeriodInfo | null {
+export function getCurrentPeriod(dayIndex: number, breakOption: BreakOption): PeriodInfo | null {
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   const periods = getPeriods(dayIndex, breakOption);
@@ -56,7 +58,7 @@ export function getCurrentPeriod(dayIndex: number, breakOption: AppSettings['bre
   }) || null;
 }
 
-export function getNextPeriod(dayIndex: number, breakOption: AppSettings['breakTimeOption']): PeriodInfo | null {
+export function getNextPeriod(dayIndex: number, breakOption: BreakOption): PeriodInfo | null {
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   const periods = getPeriods(dayIndex, breakOption);

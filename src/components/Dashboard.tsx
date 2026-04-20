@@ -38,9 +38,9 @@ const Dashboard: React.FC = () => {
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 
-  const periods = getPeriods(dayIndex, settings.breakTimeOption);
-  const currentPeriod = getCurrentPeriod(dayIndex, settings.breakTimeOption);
-  const nextPeriod = getNextPeriod(dayIndex, settings.breakTimeOption);
+  const periods = getPeriods(dayIndex, settings.breakOptions[dayIndex]);
+  const currentPeriod = getCurrentPeriod(dayIndex, settings.breakOptions[dayIndex]);
+  const nextPeriod = getNextPeriod(dayIndex, settings.breakOptions[dayIndex]);
 
   const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   const dateStr = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });

@@ -51,7 +51,7 @@ export interface BrainDump {
 }
 
 export interface AppSettings {
-  breakTimeOption: 'early' | 'late';
+  breakOptions: ('early' | 'late')[];
   notificationsEnabled: boolean;
   userName: string;
 }
