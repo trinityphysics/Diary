@@ -56,4 +56,34 @@ export interface AppSettings {
   userName: string;
 }
 
-export type TabType = 'dashboard' | 'schedule' | 'tasks' | 'reminders' | 'ocd' | 'adhd' | 'settings';
+export interface SleepLog {
+  id: string;
+  date: string; // YYYY-MM-DD
+  bedtime: string; // HH:MM
+  sleepOnset: string; // HH:MM — estimated time fell asleep
+  wakeTime: string; // HH:MM
+  quality: number; // 1-10
+  interruptions: number; // number of wake-ups
+  notes: string;
+  timestamp: string;
+}
+
+export interface SleepSettings {
+  targetBedtime: string; // HH:MM
+  targetWakeTime: string; // HH:MM
+  ouraToken: string;
+  windDownMinutes: number; // pre-sleep wind-down window in minutes
+}
+
+export interface DepartureItem {
+  id: string;
+  label: string;
+}
+
+export interface DepartureLog {
+  id: string;
+  completedAt: string; // ISO string
+  confirmedItems: string[]; // labels of confirmed items
+}
+
+export type TabType = 'dashboard' | 'schedule' | 'tasks' | 'reminders' | 'ocd' | 'adhd' | 'sleep' | 'settings';
