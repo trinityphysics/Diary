@@ -13,7 +13,7 @@ const Schedule: React.FC = () => {
   const jsDay = now.getDay();
   const todayIndex = jsDay === 0 ? 4 : jsDay === 6 ? 4 : jsDay - 1;
 
-  const periodRows = getPeriods(0, settings.breakTimeOption).filter(p => !p.isBreak && !p.isLunch);
+  const periodRows = getPeriods(0, settings.breakOptions[0]).filter(p => !p.isBreak && !p.isLunch);
 
   function getClass(dayIndex: number, periodIndex: number): ClassInfo | undefined {
     return classes.find(c => c.dayIndex === dayIndex && c.periodIndex === periodIndex);

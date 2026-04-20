@@ -42,11 +42,21 @@ export const storage = {
   getBrainDumps: (): BrainDump[] => getItem(KEYS.brainDumps, []),
   setBrainDumps: (v: BrainDump[]) => setItem(KEYS.brainDumps, v),
 
-  getSettings: (): AppSettings => getItem(KEYS.settings, {
-    breakTimeOption: 'early' as const,
-    notificationsEnabled: false,
-    userName: 'Teacher',
-  }),
+  getSettings: (): AppSettings => {
+    const defaultSettings: AppSettings = {
+      breakOptions: ['early', 'early', 'early', 'early', 'early'],
+      notificationsEnabled: false,
+      userName: 'Teacher',
+    };
+    const stored = getItem<Partial<AppSettings> & { breakTimeOption?: 'early' | 'late' }>(KEYS.settings, defaultSettings);
+    // Migrate old single breakTimeOption to per-day breakOptions
+    if (!stored.breakOptions && stored.breakTimeOption) {
+      stored.breakOptions = [stored.breakTimeOption, stored.breakTimeOption, stored.breakTimeOption, stored.breakTimeOption, stored.breakTimeOption];
+    } else if (!stored.breakOptions) {
+      stored.breakOptions = defaultSettings.breakOptions;
+    }
+    return stored as AppSettings;
+  },
   setSettings: (v: AppSettings) => setItem(KEYS.settings, v),
 };
 

@@ -69,29 +69,38 @@ const Settings: React.FC = () => {
       </div>
 
       <div className="card">
-        <h2 className="card__title">🕐 Break Time Option</h2>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>When is break time in your school?</p>
-        <div className="radio-group">
-          <label className="radio-label">
-            <input
-              type="radio"
-              name="break"
-              value="early"
-              checked={settings.breakTimeOption === 'early'}
-              onChange={() => saveSettings({ ...settings, breakTimeOption: 'early' })}
-            />
-            Early break (10:25–10:40): P3 at 10:40
-          </label>
-          <label className="radio-label">
-            <input
-              type="radio"
-              name="break"
-              value="late"
-              checked={settings.breakTimeOption === 'late'}
-              onChange={() => saveSettings({ ...settings, breakTimeOption: 'late' })}
-            />
-            Late break (11:15–11:30): P3 at 10:25
-          </label>
+        <h2 className="card__title">🕐 Break Time Settings</h2>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
+          Select when break happens each day:
+        </p>
+        <div className="break-options-grid">
+          {DAY_NAMES.map((day, i) => (
+            <div key={i} className="toggle-row" style={{ marginBottom: '0.5rem' }}>
+              <span style={{ minWidth: '90px', fontWeight: 500, fontSize: '0.9rem' }}>{day}</span>
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <button
+                  className={`toggle-btn ${settings.breakOptions[i] === 'early' ? 'toggle-btn--on' : ''}`}
+                  onClick={() => {
+                    const updated = [...settings.breakOptions] as ('early' | 'late')[];
+                    updated[i] = 'early';
+                    saveSettings({ ...settings, breakOptions: updated });
+                  }}
+                >
+                  10:25
+                </button>
+                <button
+                  className={`toggle-btn ${settings.breakOptions[i] === 'late' ? 'toggle-btn--on' : ''}`}
+                  onClick={() => {
+                    const updated = [...settings.breakOptions] as ('early' | 'late')[];
+                    updated[i] = 'late';
+                    saveSettings({ ...settings, breakOptions: updated });
+                  }}
+                >
+                  11:15
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
