@@ -11,9 +11,7 @@ const tabs: { id: TabType; label: string; emoji: string }[] = [
   { id: 'schedule', label: 'Schedule', emoji: '📅' },
   { id: 'tasks', label: 'Tasks', emoji: '✅' },
   { id: 'reminders', label: 'Reminders', emoji: '🔔' },
-  { id: 'ocd', label: 'OCD', emoji: '🧘' },
-  { id: 'adhd', label: 'ADHD', emoji: '⚡' },
-  { id: 'sleep', label: 'Sleep', emoji: '🌙' },
+  { id: 'wellbeing', label: 'Wellbeing', emoji: '💜' },
   { id: 'settings', label: 'Settings', emoji: '⚙️' },
 ];
 
