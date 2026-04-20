@@ -19,8 +19,8 @@ const TIPS = [
 function calcSleepEfficiency(log: { bedtime: string; sleepOnset: string; wakeTime: string; interruptions: number }): number {
   const MINS = 1440;
   const PENALTY = 15;
-  function toM(t: string) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
-  const bed = toM(log.bedtime), onset = toM(log.sleepOnset), wake = toM(log.wakeTime);
+  function timeToMinutes(t: string) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+  const bed = timeToMinutes(log.bedtime), onset = timeToMinutes(log.sleepOnset), wake = timeToMinutes(log.wakeTime);
   const tib = wake >= bed ? wake - bed : (wake + MINS) - bed;
   let sleep = wake >= onset ? wake - onset : (wake + MINS) - onset;
   sleep = Math.max(0, sleep - log.interruptions * PENALTY);
@@ -62,7 +62,7 @@ const Dashboard: React.FC = () => {
   const ouraLatest = storage.getOuraLatest();
   const anxietyLogs = storage.getAnxietyLogs();
 
-  // Sleep score: prefer Oura score (0-100), else manual quality (1-10 → ×10)
+  // Sleep score: prefer Oura score (0-100), else manual quality (1-10 scaled to 0-100)
   const sleepScore: number | null = ouraLatest?.score ?? (lastSleepLog ? lastSleepLog.quality * 10 : null);
   const sleepScoreSource = ouraLatest?.score != null ? 'oura' : lastSleepLog ? 'manual' : null;
   const sleepEfficiency = lastSleepLog ? calcSleepEfficiency(lastSleepLog) : null;
@@ -88,10 +88,22 @@ const Dashboard: React.FC = () => {
     return 'var(--color-danger)';
   }
 
+  function hrvColor(h: number): string {
+    if (h >= 50) return 'var(--color-success)';
+    if (h >= 30) return 'var(--color-warning)';
+    return 'var(--color-danger)';
+  }
+
   function anxietyColor(a: number): string {
     if (a <= 3) return 'var(--color-success)';
     if (a <= 6) return 'var(--color-warning)';
     return 'var(--color-danger)';
+  }
+
+  function anxietyLabel(): string {
+    if (todayAnxiety.length > 0) return 'Anxiety today';
+    if (avgAnxiety !== null) return 'Anxiety (7d avg)';
+    return 'Anxiety /10';
   }
 
   // ── Today's overview ───────────────────────────────────────────
@@ -146,7 +158,7 @@ const Dashboard: React.FC = () => {
           <div className="metric-card__icon">💓</div>
           <div
             className="metric-card__value"
-            style={{ color: hrv !== null ? (hrv >= 50 ? 'var(--color-success)' : hrv >= 30 ? 'var(--color-warning)' : 'var(--color-danger)') : 'var(--text-light)' }}
+            style={{ color: hrv !== null ? hrvColor(hrv) : 'var(--text-light)' }}
           >
             {hrv !== null ? hrv : '—'}
           </div>
@@ -161,9 +173,7 @@ const Dashboard: React.FC = () => {
           >
             {avgAnxiety !== null ? avgAnxiety : '—'}
           </div>
-          <div className="metric-card__label">
-            Anxiety{todayAnxiety.length > 0 ? ' today' : avgAnxiety !== null ? ' (7d avg)' : ' /10'}
-          </div>
+          <div className="metric-card__label">{anxietyLabel()}</div>
         </div>
 
         <div className="metric-card">
