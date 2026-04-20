@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { ClassInfo, AppSettings } from '../types';
 import { storage } from '../utils/storage';
 import { getPeriods, formatTime, DAY_NAMES, PERIOD_LABELS } from '../utils/schedule';
 
 const Schedule: React.FC = () => {
   const [classes, setClasses] = useState<ClassInfo[]>(storage.getClasses());
-  const [settings, setSettings] = useState<AppSettings>(storage.getSettings());
+  const [settings] = useState<AppSettings>(storage.getSettings());
   const [editingCell, setEditingCell] = useState<{ dayIndex: number; periodIndex: number } | null>(null);
   const [editForm, setEditForm] = useState<Partial<ClassInfo>>({});
 
   const now = new Date();
   const jsDay = now.getDay();
   const todayIndex = jsDay === 0 ? 4 : jsDay === 6 ? 4 : jsDay - 1;
-
-  useEffect(() => {
-    setSettings(storage.getSettings());
-  }, []);
 
   const periodRows = getPeriods(0, settings.breakTimeOption).filter(p => !p.isBreak && !p.isLunch);
 

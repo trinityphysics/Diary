@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import type { BrainDump, Task } from '../types';
 import { storage } from '../utils/storage';
 
@@ -29,16 +29,11 @@ const ADHDTools: React.FC = () => {
   const [dumpText, setDumpText] = useState('');
   const [brainDumps, setBrainDumps] = useState<BrainDump[]>(storage.getBrainDumps());
 
-  // Top task
-  const [topTask, setTopTask] = useState<Task | null>(null);
-
-  useEffect(() => {
-    const tasks = storage.getTasks();
-    const top = tasks.find(t => !t.completed && t.priority === 'high')
-      || tasks.find(t => !t.completed && t.priority === 'medium')
-      || tasks.find(t => !t.completed) || null;
-    setTopTask(top);
-  }, [section]);
+  // Top task - computed inline so no effect needed
+  const allTasks = storage.getTasks();
+  const topTask: Task | null = allTasks.find(t => !t.completed && t.priority === 'high')
+    || allTasks.find(t => !t.completed && t.priority === 'medium')
+    || allTasks.find(t => !t.completed) || null;
 
   function startPomodoro() {
     setPomodoroRunning(true);
