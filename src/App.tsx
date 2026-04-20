@@ -5,10 +5,9 @@ import Dashboard from './components/Dashboard';
 import Schedule from './components/Schedule';
 import Tasks from './components/Tasks';
 import Reminders from './components/Reminders';
-import OCDTools from './components/OCDTools';
-import ADHDTools from './components/ADHDTools';
-import SleepTools from './components/SleepTools';
+import Wellbeing from './components/Wellbeing';
 import Settings from './components/Settings';
+import StarField from './components/StarField';
 import './App.css';
 
 const App: React.FC = () => {
@@ -20,9 +19,7 @@ const App: React.FC = () => {
       case 'schedule': return <Schedule />;
       case 'tasks': return <Tasks />;
       case 'reminders': return <Reminders />;
-      case 'ocd': return <OCDTools />;
-      case 'adhd': return <ADHDTools />;
-      case 'sleep': return <SleepTools />;
+      case 'wellbeing': return <Wellbeing />;
       case 'settings': return <Settings />;
       default: return <Dashboard />;
     }
@@ -30,11 +27,14 @@ const App: React.FC = () => {
 
   return (
     <div className="app">
+      <StarField />
       <header className="app-header">
-        <h1 className="app-title">📓 Teacher Diary</h1>
+        <h1 className="app-title">✨ Teacher Diary</h1>
       </header>
       <main className="app-main">
-        {renderTab()}
+        <div key={activeTab} className="tab-content">
+          {renderTab()}
+        </div>
       </main>
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
