@@ -221,14 +221,17 @@ function ProgressSection() {
   const thisWeekChecks = thisWeekLogs.reduce((s, l) => s + l.count, 0);
   const lastWeekChecks = lastWeekLogs.reduce((s, l) => s + l.count, 0);
 
+  // Convert JS Sunday=0 to ISO Monday=0, then add 1 for days elapsed this week
   const daysThisWeek = Math.max(1, ((now.getDay() + 6) % 7) + 1);
   const avgThisWeek = (thisWeekChecks / daysThisWeek).toFixed(1);
   const avgLastWeek = lastWeekLogs.length ? (lastWeekChecks / 7).toFixed(1) : null;
 
+  const thisAvg = thisWeekChecks / daysThisWeek;
+  const lastAvg = lastWeekChecks / 7;
   const trend =
     avgLastWeek === null ? 'nodata'
-    : thisWeekChecks / daysThisWeek < lastWeekChecks / 7 ? 'improving'
-    : thisWeekChecks / daysThisWeek === lastWeekChecks / 7 ? 'stable'
+    : thisAvg < lastAvg ? 'improving'
+    : Math.abs(thisAvg - lastAvg) < 0.1 ? 'stable'
     : 'more';
 
   const itemCounts: Record<string, number> = {};

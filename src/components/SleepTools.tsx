@@ -41,14 +41,19 @@ const CBTI_RULES = [
   { icon: '🚫', rule: 'Avoid clock-watching', detail: 'Checking the time during the night activates the stress response. Turn your clock away from view.' },
 ];
 
+const MINUTES_IN_DAY = 1440;
+const INTERRUPTION_PENALTY_MINUTES = 15;
+const MIN_SLEEP_DURATION_SECONDS = 3600;
+
 function toMinutes(timeStr: string): number {
   const [h, m] = timeStr.split(':').map(Number);
   return h * 60 + m;
 }
 
 function minutesToHhMm(mins: number): string {
-  const h = Math.floor(Math.abs(mins) / 60);
-  const m = Math.abs(mins) % 60;
+  const safeMins = Math.max(0, mins);
+  const h = Math.floor(safeMins / 60);
+  const m = safeMins % 60;
   return `${h}h ${m}m`;
 }
 
@@ -265,17 +270,17 @@ function SleepDiary() {
     const bed = toMinutes(log.bedtime);
     const onset = toMinutes(log.sleepOnset);
     const wake = toMinutes(log.wakeTime);
-    const timeInBed = wake >= bed ? wake - bed : (wake + 1440) - bed;
-    let sleepTime = wake >= onset ? wake - onset : (wake + 1440) - onset;
-    sleepTime = Math.max(0, sleepTime - log.interruptions * 15);
+    const timeInBed = wake >= bed ? wake - bed : (wake + MINUTES_IN_DAY) - bed;
+    let sleepTime = wake >= onset ? wake - onset : (wake + MINUTES_IN_DAY) - onset;
+    sleepTime = Math.max(0, sleepTime - log.interruptions * INTERRUPTION_PENALTY_MINUTES);
     return timeInBed > 0 ? Math.round((sleepTime / timeInBed) * 100) : 0;
   }
 
   function calcSleepDuration(log: SleepLog): number {
     const onset = toMinutes(log.sleepOnset);
     const wake = toMinutes(log.wakeTime);
-    const dur = wake >= onset ? wake - onset : (wake + 1440) - onset;
-    return Math.max(0, dur - log.interruptions * 15);
+    const dur = wake >= onset ? wake - onset : (wake + MINUTES_IN_DAY) - onset;
+    return Math.max(0, dur - log.interruptions * INTERRUPTION_PENALTY_MINUTES);
   }
 
   function saveLog() {
@@ -364,9 +369,11 @@ function SleepDiary() {
                   </div>
                 )}
                 <div className="sleep-summary-stat">
-                  <div className="sleep-summary-value" style={{ color: (() => { const e = Math.round(recentLogs.reduce((s, l) => s + calcEfficiency(l), 0) / recentLogs.length); return e >= 85 ? 'var(--color-success)' : e >= 75 ? 'var(--color-warning)' : 'var(--color-danger)'; })() }}>
-                    {Math.round(recentLogs.reduce((s, l) => s + calcEfficiency(l), 0) / recentLogs.length)}%
-                  </div>
+                  {(() => {
+                    const avgEff = Math.round(recentLogs.reduce((s, l) => s + calcEfficiency(l), 0) / recentLogs.length);
+                    const effColor = avgEff >= 85 ? 'var(--color-success)' : avgEff >= 75 ? 'var(--color-warning)' : 'var(--color-danger)';
+                    return <div className="sleep-summary-value" style={{ color: effColor }}>{avgEff}%</div>;
+                  })()}
                   <div className="sleep-summary-label">Avg efficiency</div>
                 </div>
               </div>
@@ -412,9 +419,9 @@ function CbtiTools() {
     const bed = toMinutes(log.bedtime);
     const onset = toMinutes(log.sleepOnset);
     const wake = toMinutes(log.wakeTime);
-    const timeInBed = wake >= bed ? wake - bed : (wake + 1440) - bed;
-    let sleepTime = wake >= onset ? wake - onset : (wake + 1440) - onset;
-    sleepTime = Math.max(0, sleepTime - log.interruptions * 15);
+    const timeInBed = wake >= bed ? wake - bed : (wake + MINUTES_IN_DAY) - bed;
+    let sleepTime = wake >= onset ? wake - onset : (wake + MINUTES_IN_DAY) - onset;
+    sleepTime = Math.max(0, sleepTime - log.interruptions * INTERRUPTION_PENALTY_MINUTES);
     return timeInBed > 0 ? Math.round((sleepTime / timeInBed) * 100) : 0;
   }
 
@@ -588,7 +595,8 @@ function OuraIntegration() {
     setError(null);
     const end = new Date();
     const start = new Date();
-    start.setDate(end.getDate() - 7);
+    // Use -8 days to ensure 7 full nights are captured (Oura reports sleep by the day it ends)
+    start.setDate(end.getDate() - 8);
     const startStr = start.toISOString().slice(0, 10);
     const endStr = end.toISOString().slice(0, 10);
     try {
@@ -600,8 +608,9 @@ function OuraIntegration() {
         throw new Error(`API error ${res.status}`);
       }
       const json = await res.json() as { data: OuraSleep[] };
-      const longSleeps = json.data.filter((s: OuraSleep) => s.total_sleep_duration > 3600).reverse();
-      setData(longSleeps);
+      // Filter to primary sleep sessions (>1 hour) and show most recent first
+      const longSleeps = json.data.filter((s: OuraSleep) => s.total_sleep_duration > MIN_SLEEP_DURATION_SECONDS).reverse();
+      setData(longSleeps.slice(0, 7));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
       setError(msg.includes('fetch') ? 'Could not reach Oura API. Check your internet connection.' : msg);
