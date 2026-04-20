@@ -1,4 +1,4 @@
-import type { ClassInfo, Task, Reminder, AnxietyLog, CheckingLog, BrainDump, AppSettings } from '../types';
+import type { ClassInfo, Task, Reminder, AnxietyLog, CheckingLog, BrainDump, AppSettings, SleepLog, SleepSettings, DepartureItem, DepartureLog } from '../types';
 
 const KEYS = {
   classes: 'diary_classes',
@@ -8,6 +8,10 @@ const KEYS = {
   checkingLogs: 'diary_checking_logs',
   brainDumps: 'diary_brain_dumps',
   settings: 'diary_settings',
+  sleepLogs: 'diary_sleep_logs',
+  sleepSettings: 'diary_sleep_settings',
+  departureItems: 'diary_departure_items',
+  departureLogs: 'diary_departure_logs',
 };
 
 function getItem<T>(key: string, defaultValue: T): T {
@@ -42,6 +46,21 @@ export const storage = {
   getBrainDumps: (): BrainDump[] => getItem(KEYS.brainDumps, []),
   setBrainDumps: (v: BrainDump[]) => setItem(KEYS.brainDumps, v),
 
+  getSleepLogs: (): SleepLog[] => getItem(KEYS.sleepLogs, []),
+  setSleepLogs: (v: SleepLog[]) => setItem(KEYS.sleepLogs, v),
+
+  getSleepSettings: (): SleepSettings => {
+    const defaults: SleepSettings = { targetBedtime: '22:30', targetWakeTime: '07:00', ouraToken: '', windDownMinutes: 60 };
+    return getItem<SleepSettings>(KEYS.sleepSettings, defaults);
+  },
+  setSleepSettings: (v: SleepSettings) => setItem(KEYS.sleepSettings, v),
+
+  getDepartureItems: (): DepartureItem[] => getItem(KEYS.departureItems, getDefaultDepartureItems()),
+  setDepartureItems: (v: DepartureItem[]) => setItem(KEYS.departureItems, v),
+
+  getDepartureLogs: (): DepartureLog[] => getItem(KEYS.departureLogs, []),
+  setDepartureLogs: (v: DepartureLog[]) => setItem(KEYS.departureLogs, v),
+
   getSettings: (): AppSettings => {
     const defaultSettings: AppSettings = {
       breakOptions: ['early', 'early', 'early', 'early', 'early'],
@@ -59,6 +78,16 @@ export const storage = {
   },
   setSettings: (v: AppSettings) => setItem(KEYS.settings, v),
 };
+
+function getDefaultDepartureItems(): DepartureItem[] {
+  return [
+    { id: 'd1', label: 'Hob / oven off' },
+    { id: 'd2', label: 'Front door locked' },
+    { id: 'd3', label: 'Back door locked' },
+    { id: 'd4', label: 'Car handbrake on' },
+    { id: 'd5', label: 'Car locked' },
+  ];
+}
 
 function getDefaultReminders(): Reminder[] {
   return [

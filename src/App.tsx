@@ -7,6 +7,7 @@ import Tasks from './components/Tasks';
 import Reminders from './components/Reminders';
 import OCDTools from './components/OCDTools';
 import ADHDTools from './components/ADHDTools';
+import SleepTools from './components/SleepTools';
 import Settings from './components/Settings';
 import './App.css';
 
@@ -21,6 +22,7 @@ const App: React.FC = () => {
       case 'reminders': return <Reminders />;
       case 'ocd': return <OCDTools />;
       case 'adhd': return <ADHDTools />;
+      case 'sleep': return <SleepTools />;
       case 'settings': return <Settings />;
       default: return <Dashboard />;
     }
